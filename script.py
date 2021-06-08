@@ -6,6 +6,8 @@ import os
 import sys
 
 if __name__ == '__main__':
+    if 'AIGC' not in os.listdir('C:/'):
+        os.makedirs('C:/AIGC')
     app = QApplication(sys.argv)
     apply_stylesheet(app, theme='dark_cyan.xml')
     stylesheet = app.styleSheet()
