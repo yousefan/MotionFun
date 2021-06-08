@@ -7,6 +7,7 @@ import cv2
 class WebcamThread(QThread):
     change_pixmap_signal = Signal(np.ndarray)
     person_detection = Signal(bool)
+    landmark_results = Signal(list)
 
     def __init__(self, webcam_id):
         super().__init__()
@@ -32,6 +33,7 @@ class WebcamThread(QThread):
                     self.person_detection.emit(False)
                 else:
                     self.person_detection.emit(True)
+                    self.landmark_results.emit(results.pose_landmarks.landmark)
 
                 self.draw_horizontal_line(image)
                 self.change_pixmap_signal.emit(image)

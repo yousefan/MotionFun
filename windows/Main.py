@@ -8,6 +8,7 @@ import cv2
 
 from utils.LoadWebcamDevices import LoadWebcamDevices
 from utils.WebcamThread import WebcamThread
+from utils.AIGC import AIGC
 
 
 class MainWindow(QMainWindow):
@@ -38,6 +39,7 @@ class MainWindow(QMainWindow):
         self.started = False
         self.thread = None
         self.loadWebcamsThread = None
+        self.aigc = AIGC()
 
         self.load_webcam_devices()
         self.startBtn.clicked.connect(self.start)
@@ -56,6 +58,7 @@ class MainWindow(QMainWindow):
                 self.thread = WebcamThread(webcam_id)
                 self.thread.change_pixmap_signal.connect(self.update_image)
                 self.thread.person_detection.connect(self.person_detection)
+                self.thread.landmark_results.connect(self.landmarks)
                 self.thread.start()
                 self.started = True
                 self.startBtn.setText("Stop")
@@ -79,6 +82,10 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         self.thread.stop()
         event.accept()
+
+    @Slot(list)
+    def landmarks(self, landmarks):
+        self.aigc.control(landmarks=landmarks)
 
     @Slot(list)
     def on_loaded_webcams(self, webcams):
