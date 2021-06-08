@@ -1,4 +1,5 @@
 import math
+import os
 import time
 from playsound import playsound
 from win32gui import GetWindowText, GetForegroundWindow
@@ -58,6 +59,13 @@ class AIGC:
     def control(self, landmarks):
         pass
 
+    def get_available_games(self):
+        gameConfigs = os.listdir('C:/AIGC')
+        games = []
+        for gc in gameConfigs:
+            if ".aigc" in gc:
+                games.append(gc.replace(".aigc",""))
+        return games
 
     def GT(self):
         pass

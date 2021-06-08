@@ -42,6 +42,7 @@ class MainWindow(QMainWindow):
         self.aigc = AIGC()
 
         self.load_webcam_devices()
+        self.load_games()
         self.startBtn.clicked.connect(self.start)
 
     def start(self):
@@ -55,6 +56,8 @@ class MainWindow(QMainWindow):
         else:
             if not self.started:
                 webcam_id = int(self.webcamSelection.currentText().replace("webcam ", ""))
+                selectedGame = self.gameSelection.currentText()
+                self.aigc.load_game_config(selectedGame)
                 self.thread = WebcamThread(webcam_id)
                 self.thread.change_pixmap_signal.connect(self.update_image)
                 self.thread.person_detection.connect(self.person_detection)
@@ -70,6 +73,11 @@ class MainWindow(QMainWindow):
                 self.startBtn.setText("Start")
                 self.statusLabel.setStyleSheet("color: rgb(255, 85, 127);")
                 self.statusLabel.setText("Stopped")
+
+    def load_games(self):
+        games = self.aigc.get_available_games()
+        for g in games:
+            self.gameSelection.addItem(g)
 
     def load_webcam_devices(self):
         self.startBtn.setText("Loading...")
