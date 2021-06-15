@@ -47,6 +47,8 @@ class AIGC:
             'RIGHT_FOOT_INDEX': 31
         }
         self.commands = []
+        self.prevTime = 0
+        self.prevPose = 0
 
     def calculate_angle(self, point1, point2):
         delta_x = point1.x - point2.x
@@ -71,11 +73,11 @@ class AIGC:
                     {'command': command, 'points1': points1, 'points2': points2, 'axis': axis, 'actions': actions})
             elif command == 'FACTION':
                 points = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                direction = split[2].replace("[", "").replace("]", "")
+                velocity = split[2].replace("[", "").replace("]", "")
                 axis = split[3].replace("[", "").replace("]", "")
                 actions = [p for p in split[4].replace("[", "").replace("]", "").split("|")]
                 self.commands.append(
-                    {'command': command, 'points': points, 'direction': direction, 'axis': axis, 'actions': actions})
+                    {'command': command, 'points': points, 'velocity': velocity, 'axis': axis, 'actions': actions})
             elif command == 'ANGLE':
                 points1 = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
                 points2 = [p for p in split[2].replace("[", "").replace("]", "").split("|")]
@@ -96,7 +98,8 @@ class AIGC:
                 self.GT(command.get('points1')[0], command.get('points2')[0], command.get('axis'),
                         command.get('actions'), landmarks)
             elif c == 'FACTION':
-                self.FACTION()
+                self.FACTION(command.get('points')[0], command.get('velocity'), command.get('axis'),
+                             command.get('actions'), landmarks)
             elif c == 'ANGLE':
                 self.ANGLE(command.get('points1')[0], command.get('points2')[0], command.get('threshold'),
                            command.get('actions'), landmarks)
@@ -121,8 +124,30 @@ class AIGC:
             if p1.y > p2.y:
                 print('trigger GT y')
 
-    def FACTION(self):
-        pass
+    def FACTION(self, points, vel, axis, actions, landmarks):
+        point = landmarks[self.marks.get(points)]
+        # dt = time.time() - self.prevTime
+        dt = 0.05
+        vel = float(vel)
+        if axis == 'x':
+            dx = point.x - self.prevPose
+            v = dx / dt
+            if v < vel < 0:  # fast action left
+                print("Left")
+            elif v > vel > 0:  # fast action right
+                print("Right")
+            self.prevPose = point.x
+            self.prevTime = time.time()
+        elif axis == 'y':
+            dy = point.y - self.prevPose
+            v = dy / dt
+            if v < vel < 0:  # fast action up
+                print("Up")
+            elif v > vel > 0:  # fast action down
+                print("Down")
+            self.prevPose = point.y
+            # self.prevTime = time.time()
+
 
     def ANGLE(self, points1, points2, threshold, actions, landmarks):
         p1 = landmarks[self.marks.get(points1)]
