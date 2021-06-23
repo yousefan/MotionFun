@@ -48,7 +48,8 @@ class AIGC:
         }
         self.commands = []
         self.prevTime = 0
-        self.prevPose = 0
+        self.prevPose = []
+        self.index = 0
 
     def calculate_angle(self, point1, point2):
         delta_x = point1.x - point2.x
@@ -76,6 +77,7 @@ class AIGC:
                 velocity = split[2].replace("[", "").replace("]", "")
                 axis = split[3].replace("[", "").replace("]", "")
                 actions = [p for p in split[4].replace("[", "").replace("]", "").split("|")]
+                self.prevPose.append(0)
                 self.commands.append(
                     {'command': command, 'points': points, 'velocity': velocity, 'axis': axis, 'actions': actions})
             elif command == 'ANGLE':
@@ -92,6 +94,7 @@ class AIGC:
         print(self.commands)
 
     def control(self, landmarks):
+        self.index = 0
         for command in self.commands:
             c = command.get('command')
             if c == 'GT':
@@ -100,6 +103,7 @@ class AIGC:
             elif c == 'FACTION':
                 self.FACTION(command.get('points')[0], command.get('velocity'), command.get('axis'),
                              command.get('actions'), landmarks)
+                self.index += 1
             elif c == 'ANGLE':
                 self.ANGLE(command.get('points1')[0], command.get('points2')[0], command.get('threshold'),
                            command.get('actions'), landmarks)
@@ -126,28 +130,26 @@ class AIGC:
 
     def FACTION(self, points, vel, axis, actions, landmarks):
         point = landmarks[self.marks.get(points)]
-        # dt = time.time() - self.prevTime
         dt = 0.05
         vel = float(vel)
         if axis == 'x':
-            dx = point.x - self.prevPose
+            dx = point.x - self.prevPose[self.index]
             v = dx / dt
             if v < vel < 0:  # fast action left
                 print("Left")
             elif v > vel > 0:  # fast action right
                 print("Right")
-            self.prevPose = point.x
+            self.prevPose[self.index] = point.x
             self.prevTime = time.time()
         elif axis == 'y':
-            dy = point.y - self.prevPose
+            dy = point.y - self.prevPose[self.index]
             v = dy / dt
             if v < vel < 0:  # fast action up
                 print("Up")
             elif v > vel > 0:  # fast action down
                 print("Down")
-            self.prevPose = point.y
+            self.prevPose[self.index] = point.y
             # self.prevTime = time.time()
-
 
     def ANGLE(self, points1, points2, threshold, actions, landmarks):
         p1 = landmarks[self.marks.get(points1)]
