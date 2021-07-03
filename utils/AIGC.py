@@ -3,10 +3,7 @@ import os
 import time
 from playsound import playsound
 from win32gui import GetWindowText, GetForegroundWindow
-import pyautogui
-import pydirectinput
-import threading
-from utils.Actions import *
+from utils.Actions import Actions
 
 
 class AIGC:
@@ -50,6 +47,7 @@ class AIGC:
         self.prevTime = 0
         self.prevPose = []
         self.index = 0
+        self.action = None
 
     def calculate_angle(self, point1, point2):
         delta_x = point1.x - point2.x
@@ -91,10 +89,14 @@ class AIGC:
             elif command == 'SIT':
                 actions = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
                 self.commands.append({'command': command, 'actions': actions})
+        self.action = Actions()
+        self.action.count_single_press_actions(commands=self.commands)
+        print(self.action.once)
         print(self.commands)
 
     def control(self, landmarks):
         self.index = 0
+        self.action.currentSp = -1
         for command in self.commands:
             c = command.get('command')
             if c == 'GT':
@@ -123,10 +125,12 @@ class AIGC:
         p2 = landmarks[self.marks.get(points2)]
         if axis == 'x':
             if p1.x > p2.x:
-                print('trigger GT x')
+                self.action.run(actions)
+            else:
+                self.action.single_press_release()
         elif axis == 'y':
             if p1.y > p2.y:
-                print('trigger GT y')
+                self.action.single_press_release()
 
     def FACTION(self, points, vel, axis, actions, landmarks):
         point = landmarks[self.marks.get(points)]
@@ -136,20 +140,30 @@ class AIGC:
             dx = point.x - self.prevPose[self.index]
             v = dx / dt
             if v < vel < 0:  # fast action left
-                print("Left")
-            elif v > vel > 0:  # fast action right
-                print("Right")
+                self.action.run(actions)
+            else:
+                self.action.single_press_release()
+
+            if v > vel > 0:  # fast action right
+                self.action.run(actions)
+            else:
+                self.action.single_press_release()
+
             self.prevPose[self.index] = point.x
             self.prevTime = time.time()
         elif axis == 'y':
             dy = point.y - self.prevPose[self.index]
             v = dy / dt
             if v < vel < 0:  # fast action up
-                print("Up")
-            elif v > vel > 0:  # fast action down
-                print("Down")
+                self.action.run(actions)
+            else:
+                self.action.single_press_release()
+
+            if v > vel > 0:  # fast action down
+                self.action.run(actions)
+            else:
+                self.action.single_press_release()
             self.prevPose[self.index] = point.y
-            # self.prevTime = time.time()
 
     def ANGLE(self, points1, points2, threshold, actions, landmarks):
         p1 = landmarks[self.marks.get(points1)]
@@ -157,7 +171,9 @@ class AIGC:
         theta = self.calculate_angle(p2, p1)
         print(theta)
         if float(threshold[0]) < theta < float(threshold[1]):
-            print('trigger ANGLE')
+            self.action.run(actions)
+        else:
+            self.action.single_press_release()
 
     def SIT(self):
         pass
