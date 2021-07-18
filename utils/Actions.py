@@ -27,7 +27,6 @@ class Actions:
             if act == self.SINGLE_PRESS:
                 self.currentSp += 1
                 threading.Thread(target=self.single_press, args=(key,)).start()
-
             elif act == self.MULTI_PRESS:
                 threading.Thread(target=self.multi_press, args=(key,)).start()
             elif act == self.FACTOR_PRESS:
@@ -42,16 +41,16 @@ class Actions:
 
     def single_press(self, key):
         if not self.once[self.currentSp]:
-            # pydirectinput.press(key)
-            print("single press: "+key)
             self.once[self.currentSp] = True
+            pydirectinput.press(key)
+            # print("single press: "+key)
 
     def multi_press(self, key):
-        # pydirectinput.press(key)
-        print("multi press: "+key)
+        pydirectinput.press(key)
+        # print("multi press: "+key)
 
     def factor_press(self, key, factor):
-        pass
+        pydirectinput.press(key, presses=factor)
 
     def keydown_keyup(self, key):
         pass
