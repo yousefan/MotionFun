@@ -4,6 +4,7 @@ import time
 from playsound import playsound
 from win32gui import GetWindowText, GetForegroundWindow
 from utils.Actions import Actions
+from cryptography.fernet import Fernet as fer
 
 
 class AIGC:
@@ -48,6 +49,8 @@ class AIGC:
         self.prevPose = []
         self.index = 0
         self.action = None
+        self.encryptionKey = "rerSv7vcokxnDCc-CsgV95AjUtq-YpNtoI3NBrHq8H0="
+        self.cipher = fer(self.encryptionKey)
 
     def calculate_angle(self, point1, point2):
         delta_x = point1.x - point2.x
@@ -57,8 +60,9 @@ class AIGC:
 
     def load_game_config(self, game):
         configAddress = 'C:/AIGC/' + game + '.aigc'
-        f = open(configAddress, "r")
-        lines = f.read().split('\n')
+        f = open(configAddress, "rb")
+        enc_content = f.read()
+        lines = str(self.cipher.decrypt(enc_content)).split('\n')
         self.commands = []
         for line in lines:
             split = line.split(',')
