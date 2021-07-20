@@ -47,6 +47,7 @@ class AIGC:
         self.prevTime = 0
         self.prevPose = []
         self.index = 0
+        self.singlePressCount = 0
         self.action = None
 
     def calculate_angle(self, point1, point2):
@@ -91,12 +92,11 @@ class AIGC:
                 self.commands.append({'command': command, 'actions': actions})
         self.action = Actions()
         self.action.count_single_press_actions(commands=self.commands)
-        print(self.action.once)
         print(self.commands)
 
     def control(self, landmarks):
         self.index = 0
-        self.action.currentSp = -1
+        self.singlePressCount = 0
         for command in self.commands:
             c = command.get('command')
             if c == 'GT':
@@ -111,6 +111,7 @@ class AIGC:
                            command.get('actions'), landmarks)
             elif c == 'SIT':
                 pass
+            self.singlePressCount += 1
 
     def get_available_games(self):
         gameConfigs = os.listdir('C:/AIGC')
@@ -125,12 +126,14 @@ class AIGC:
         p2 = landmarks[self.marks.get(points2)]
         if axis == 'x':
             if p1.x > p2.x:
-                self.action.run(actions)
+                self.action.run(actions, self.singlePressCount)
             else:
-                self.action.single_press_release()
+                self.action.single_press_release(self.singlePressCount)
         elif axis == 'y':
             if p1.y > p2.y:
-                self.action.single_press_release()
+                self.action.run(actions, self.singlePressCount)
+            else:
+                self.action.single_press_release(self.singlePressCount)
 
     def FACTION(self, points, vel, axis, actions, landmarks):
         point = landmarks[self.marks.get(points)]
@@ -140,14 +143,14 @@ class AIGC:
             dx = point.x - self.prevPose[self.index]
             v = dx / dt
             if v < vel < 0:  # fast action left
-                self.action.run(actions)
+                self.action.run(actions, self.singlePressCount)
             else:
-                self.action.single_press_release()
+                self.action.single_press_release(self.singlePressCount)
 
             if v > vel > 0:  # fast action right
-                self.action.run(actions)
+                self.action.run(actions, self.singlePressCount)
             else:
-                self.action.single_press_release()
+                self.action.single_press_release(self.singlePressCount)
 
             self.prevPose[self.index] = point.x
             self.prevTime = time.time()
@@ -155,25 +158,25 @@ class AIGC:
             dy = point.y - self.prevPose[self.index]
             v = dy / dt
             if v < vel < 0:  # fast action up
-                self.action.run(actions)
+                self.action.run(actions, self.singlePressCount)
             else:
-                self.action.single_press_release()
+                self.action.single_press_release(self.singlePressCount)
 
             if v > vel > 0:  # fast action down
-                self.action.run(actions)
+                self.action.run(actions, self.singlePressCount)
             else:
-                self.action.single_press_release()
+                self.action.single_press_release(self.singlePressCount)
             self.prevPose[self.index] = point.y
 
     def ANGLE(self, points1, points2, threshold, actions, landmarks):
         p1 = landmarks[self.marks.get(points1)]
         p2 = landmarks[self.marks.get(points2)]
         theta = self.calculate_angle(p2, p1)
-        print(theta)
+        # print(theta)
         if float(threshold[0]) < theta < float(threshold[1]):
-            self.action.run(actions)
+            self.action.run(actions, self.singlePressCount)
         else:
-            self.action.single_press_release()
+            self.action.single_press_release(self.singlePressCount)
 
     def SIT(self):
         pass

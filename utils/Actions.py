@@ -9,6 +9,8 @@ class Actions:
         self.SINGLE_PRESS = "sp"
         self.MULTI_PRESS = "mp"
         self.FACTOR_PRESS = "fp"
+        self.KEY_UP = "ku"
+        self.KEY_DOWN = "kd"
         self.K2 = "k2"
         self.once = []
         self.currentSp = -1
@@ -21,36 +23,42 @@ class Actions:
                 if act == self.SINGLE_PRESS:
                     self.once.append(False)
 
-    def run(self, actions):
+    def run(self, actions, spc):  # spc => single press count
         for action in actions:
             act, key = action.split(".")[0], action.split(".")[1]
             if act == self.SINGLE_PRESS:
-                self.currentSp += 1
-                threading.Thread(target=self.single_press, args=(key,)).start()
+                threading.Thread(target=self.single_press, args=(key, spc,)).start()
             elif act == self.MULTI_PRESS:
                 threading.Thread(target=self.multi_press, args=(key,)).start()
+            elif act == self.KEY_UP:
+                threading.Thread(target=self.key_up, args=(key,)).start()
+            elif act == self.KEY_DOWN:
+                threading.Thread(target=self.key_down, args=(key,)).start()
             elif act == self.FACTOR_PRESS:
                 key, factor = key.split("@")[0], key.split("@")[1]
                 threading.Thread(target=self.factor_press, args=(key, factor,)).start()
             elif act == self.K2:
                 pass
 
-    def single_press_release(self):
+    def single_press_release(self, spc):
         if len(self.once) > 0:
-            self.once[self.currentSp] = False
+            self.once[spc] = False
 
-    def single_press(self, key):
-        if not self.once[self.currentSp]:
-            self.once[self.currentSp] = True
+    def single_press(self, key, spc):
+        if not self.once[spc]:
+            self.once[spc] = True
             pydirectinput.press(key)
-            # print("single press: "+key)
+            print("single press: " + key)
 
     def multi_press(self, key):
         pydirectinput.press(key)
-        # print("multi press: "+key)
+        print("multi press: " + key)
 
     def factor_press(self, key, factor):
         pydirectinput.press(key, presses=factor)
 
-    def keydown_keyup(self, key):
-        pass
+    def key_up(self, key):
+        pydirectinput.keyUp(key)
+
+    def key_down(self, key):
+        pydirectinput.keyDown(key)
