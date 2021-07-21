@@ -144,12 +144,12 @@ class AIGC:
             v = dx / dt
             if v < vel < 0:  # fast action left
                 self.action.run(actions, self.singlePressCount)
-            else:
+            elif abs(v) < 0.1:
                 self.action.single_press_release(self.singlePressCount)
 
             if v > vel > 0:  # fast action right
                 self.action.run(actions, self.singlePressCount)
-            else:
+            elif abs(v) < 0.1:
                 self.action.single_press_release(self.singlePressCount)
 
             self.prevPose[self.index] = point.x
@@ -159,12 +159,12 @@ class AIGC:
             v = dy / dt
             if v < vel < 0:  # fast action up
                 self.action.run(actions, self.singlePressCount)
-            else:
+            elif abs(v) < 0.1:
                 self.action.single_press_release(self.singlePressCount)
 
             if v > vel > 0:  # fast action down
                 self.action.run(actions, self.singlePressCount)
-            else:
+            elif abs(v) < 0.1:
                 self.action.single_press_release(self.singlePressCount)
             self.prevPose[self.index] = point.y
 
