@@ -1,3 +1,4 @@
+import json
 import math
 import os
 import time
@@ -49,6 +50,8 @@ class AIGC:
         self.index = 0
         self.singlePressCount = 0
         self.action = None
+        self.gameName = None
+        self.ready = False
 
     def calculate_angle(self, point1, point2):
         delta_x = point1.x - point2.x
@@ -57,6 +60,15 @@ class AIGC:
         return theta
 
     def load_game_config(self, game):
+        configAddress = 'C:/AIGC/' + game + '.aigc'
+        f = open(configAddress, "r")
+        data = json.loads(f.read())
+        data = data.get('game')
+        self.gameName = data.get('name')
+        self.ready = data.get('ready')
+        self.commands = data.get('commands')
+
+    def load_game_config2(self, game):
         configAddress = 'C:/AIGC/' + game + '.aigc'
         f = open(configAddress, "r")
         lines = f.read().split('\n')
