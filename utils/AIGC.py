@@ -67,47 +67,9 @@ class AIGC:
         self.gameName = data.get('name')
         self.ready = data.get('ready')
         self.commands = data.get('commands')
-
-    def load_game_config2(self, game):
-        configAddress = 'C:/AIGC/' + game + '.aigc'
-        f = open(configAddress, "r")
-        lines = f.read().split('\n')
-        self.commands = []
-        for line in lines:
-            split = line.split(',')
-            command = split[0]
-            if command == 'GT':
-                points1 = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                points2 = [p for p in split[2].replace("[", "").replace("]", "").split("|")]
-                axis = split[3].replace("[", "").replace("]", "")
-                actions = [p for p in split[4].replace("[", "").replace("]", "").split("|")]
-                self.commands.append(
-                    {'command': command, 'points1': points1, 'points2': points2, 'axis': axis, 'actions': actions})
-            elif command == 'FACTION':
-                points = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                velocity = split[2].replace("[", "").replace("]", "")
-                axis = split[3].replace("[", "").replace("]", "")
-                actions = [p for p in split[4].replace("[", "").replace("]", "").split("|")]
+        for command in self.commands:
+            if command.get('command') == "FACTION":
                 self.prevPose.append(0)
-                self.commands.append(
-                    {'command': command, 'points': points, 'velocity': velocity, 'axis': axis, 'actions': actions})
-            elif command == 'ANGLE':
-                points1 = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                points2 = [p for p in split[2].replace("[", "").replace("]", "").split("|")]
-                threshold = [p for p in split[3].replace("[", "").replace("]", "").split("|")]
-                actions = [p for p in split[4].replace("[", "").replace("]", "").split("|")]
-                self.commands.append(
-                    {'command': command, 'points1': points1, 'points2': points2, 'threshold': threshold,
-                     'actions': actions})
-            elif command == 'SIT':
-                actions = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                self.commands.append({'command': command, 'actions': actions})
-
-            elif command == 'MOUSE':
-                points = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                actions = [p for p in split[2].replace("[", "").replace("]", "").split("|")]
-                self.commands.append({'command': command, 'points': points, 'actions': actions})
-
         self.action = Actions()
         self.action.count_single_press_actions(commands=self.commands)
         print(self.commands)

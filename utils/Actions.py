@@ -24,7 +24,7 @@ class Actions:
             actions = command.get('actions')
             if actions is not None:
                 for action in actions:
-                    act, _ = action.split(".")[0], action.split(".")[1]
+                    act = action.get('action')
                     if act == self.SINGLE_PRESS:
                         self.once.append(False)
             else:
@@ -32,7 +32,7 @@ class Actions:
 
     def run_on_keyboard(self, actions, spc):  # spc => single press count
         for action in actions:
-            act, key = action.split(".")[0], action.split(".")[1]
+            act, key = action.get('action'), action.get('key')
             if act == self.SINGLE_PRESS:
                 threading.Thread(target=self.single_press, args=(key, spc,)).start()
             elif act == self.MULTI_PRESS:
@@ -42,14 +42,14 @@ class Actions:
             elif act == self.KEY_DOWN:
                 threading.Thread(target=self.key_down, args=(key,)).start()
             elif act == self.FACTOR_PRESS:
-                key, factor = key.split("@")[0], key.split("@")[1]
+                factor = action.get('factor')
                 threading.Thread(target=self.factor_press, args=(key, factor,)).start()
             elif act == self.K2:
                 pass
 
     def run_on_mouse(self, actions, x, y):
         for action in actions:
-            act, key = action.split(".")[0], action.split(".")[1]
+            act, key = action.get('action'), action.get('key')
             if act == self.DRAG:
                 threading.Thread(target=self.mouse_drag, args=(key, x, y,)).start()
 
