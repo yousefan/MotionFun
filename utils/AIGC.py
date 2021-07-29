@@ -9,7 +9,7 @@ from utils.Actions import Actions
 
 class AIGC:
     def __init__(self):
-        self.marks = {
+        self.bodyMarks = {
             'NOSE': 0,
             'LEFT_EYE_INNER': 4,
             'LEFT_EYE': 5,
@@ -44,6 +44,30 @@ class AIGC:
             'LEFT_FOOT_INDEX': 32,
             'RIGHT_FOOT_INDEX': 31
         }
+        self.handMarks = {
+            'WRIST': 0,
+            'THUMB_CMC': 1,
+            'THUMB_MCP': 2,
+            'THUMB_IP': 3,
+            'THUMB_TIP': 4,
+            'INDEX_FINGER_MCP': 5,
+            'INDEX_FINGER_PIP': 6,
+            'INDEX_FINGER_DIP': 7,
+            'INDEX_FINGER_TIP': 8,
+            'MIDDLE_FINGER_MCP': 9,
+            'MIDDLE_FINGER_PIP': 10,
+            'MIDDLE_FINGER_DIP': 11,
+            'MIDDLE_FINGER_TIP': 12,
+            'RING_FINGER_MCP': 13,
+            'RING_FINGER_PIP': 14,
+            'RING_FINGER_DIP': 15,
+            'RING_FINGER_TIP': 16,
+            'PINKY_MCP': 17,
+            'PINKY_PIP': 18,
+            'PINKY_DIP': 19,
+            'PINKY_TIP': 20
+        }
+        self.marks = None
         self.commands = []
         self.prevTime = 0
         self.prevPose = []
@@ -52,6 +76,8 @@ class AIGC:
         self.action = None
         self.gameName = None
         self.ready = False
+        self.prevProcTime = 0
+        self.fps = 0
 
     def calculate_angle(self, point1, point2):
         delta_x = point1.x - point2.x
@@ -62,17 +88,23 @@ class AIGC:
     def load_game_config(self, game):
         configAddress = 'C:/AIGC/' + game + '.aigc'
         f = open(configAddress, "r")
-        data = json.loads(f.read())
-        data = data.get('game')
-        self.gameName = data.get('name')
-        self.ready = data.get('ready')
-        self.commands = data.get('commands')
+        gameConfig = json.loads(f.read())
+        gameConfig = gameConfig.get('game')
+        self.gameName = gameConfig.get('name')
+        self.ready = gameConfig.get('ready')
+        self.commands = gameConfig.get('commands')
+        poseType = gameConfig.get('PoseType')
+        if poseType == "body":
+            self.marks = self.bodyMarks
+        elif poseType == "hand":
+            self.marks = self.handMarks
         for command in self.commands:
             if command.get('command') == "FACTION":
                 self.prevPose.append(0)
         self.action = Actions()
         self.action.count_single_press_actions(commands=self.commands)
         print(self.commands)
+        return poseType
 
     def control(self, landmarks):
         self.index = 0
@@ -96,6 +128,11 @@ class AIGC:
                 self.MOUSE(command.get('points')[0], command.get('actions'), landmarks)
 
             self.singlePressCount += 1
+
+        self.fps = 1 / (time.time() - self.prevProcTime)
+        self.prevProcTime = time.time()
+        print(self.fps)
+        return self.fps
 
     def get_available_games(self):
         gameConfigs = os.listdir('C:/AIGC')

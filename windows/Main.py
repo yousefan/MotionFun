@@ -57,10 +57,10 @@ class MainWindow(QMainWindow):
             if not self.started:
                 webcam_id = int(self.webcamSelection.currentText().replace("webcam ", ""))
                 selectedGame = self.gameSelection.currentText()
-                self.aigc.load_game_config(selectedGame)
-                self.thread = WebcamThread(webcam_id)
+                poseType = self.aigc.load_game_config(selectedGame)
+                self.thread = WebcamThread(webcam_id, poseType)
                 self.thread.change_pixmap_signal.connect(self.update_image)
-                self.thread.person_detection.connect(self.person_detection)
+                self.thread.detection.connect(self.detection)
                 self.thread.landmark_results.connect(self.landmarks)
                 self.thread.start()
                 self.started = True
@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
 
     @Slot(list)
     def landmarks(self, landmarks):
-        self.aigc.control(landmarks=landmarks)
+        fps = self.aigc.control(landmarks=landmarks)
 
     @Slot(list)
     def on_loaded_webcams(self, webcams):
@@ -108,7 +108,7 @@ class MainWindow(QMainWindow):
         self.imageLabel.setPixmap(qt_img)
 
     @Slot(bool)
-    def person_detection(self, detected):
+    def detection(self, detected):
         if detected:
             self.detectionLabel.setStyleSheet("color: rgb(85, 170, 127);")
             self.detectionLabel.setText("Detected")
