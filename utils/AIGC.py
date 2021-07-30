@@ -103,29 +103,30 @@ class AIGC:
                 self.prevPose.append(0)
         self.action = Actions()
         self.action.count_single_press_actions(commands=self.commands)
-        print(self.commands)
         return poseType, self.gameName
 
     def control(self, landmarks):
         self.index = 0
         self.singlePressCount = 0
-        for command in self.commands:
-            c = command.get('command')
-            if c == 'GT':
-                self.GT(command.get('points1')[0], command.get('points2')[0], command.get('axis'),
-                        command.get('actions'), landmarks)
-            elif c == 'FACTION':
-                self.FACTION(command.get('points')[0], command.get('velocity'), command.get('axis'),
-                             command.get('actions'), landmarks)
-                self.index += 1
-            elif c == 'ANGLE':
-                self.ANGLE(command.get('points1')[0], command.get('points2')[0], command.get('threshold'),
-                           command.get('actions'), landmarks)
-            elif c == 'SIT':
-                pass
 
-            elif c == 'MOUSE':
-                self.MOUSE(command.get('points')[0], command.get('actions'), landmarks)
+        if GetWindowText(GetForegroundWindow()) == self.gameName:
+            for command in self.commands:
+                c = command.get('command')
+                if c == 'GT':
+                    self.GT(command.get('points1')[0], command.get('points2')[0], command.get('axis'),
+                            command.get('actions'), landmarks)
+                elif c == 'FACTION':
+                    self.FACTION(command.get('points')[0], command.get('velocity'), command.get('axis'),
+                                 command.get('actions'), landmarks)
+                    self.index += 1
+                elif c == 'ANGLE':
+                    self.ANGLE(command.get('points1')[0], command.get('points2')[0], command.get('threshold'),
+                               command.get('actions'), landmarks)
+                elif c == 'SIT':
+                    pass
+
+                elif c == 'MOUSE':
+                    self.MOUSE(command.get('points')[0], command.get('actions'), landmarks)
 
             self.singlePressCount += 1
 
