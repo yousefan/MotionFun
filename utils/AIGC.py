@@ -1,3 +1,4 @@
+import json
 import math
 import os
 import time
@@ -9,7 +10,7 @@ from cryptography.fernet import Fernet as fer
 
 class AIGC:
     def __init__(self):
-        self.marks = {
+        self.bodyMarks = {
             'NOSE': 0,
             'LEFT_EYE_INNER': 4,
             'LEFT_EYE': 5,
@@ -44,13 +45,41 @@ class AIGC:
             'LEFT_FOOT_INDEX': 32,
             'RIGHT_FOOT_INDEX': 31
         }
+        self.handMarks = {
+            'WRIST': 0,
+            'THUMB_CMC': 1,
+            'THUMB_MCP': 2,
+            'THUMB_IP': 3,
+            'THUMB_TIP': 4,
+            'INDEX_FINGER_MCP': 5,
+            'INDEX_FINGER_PIP': 6,
+            'INDEX_FINGER_DIP': 7,
+            'INDEX_FINGER_TIP': 8,
+            'MIDDLE_FINGER_MCP': 9,
+            'MIDDLE_FINGER_PIP': 10,
+            'MIDDLE_FINGER_DIP': 11,
+            'MIDDLE_FINGER_TIP': 12,
+            'RING_FINGER_MCP': 13,
+            'RING_FINGER_PIP': 14,
+            'RING_FINGER_DIP': 15,
+            'RING_FINGER_TIP': 16,
+            'PINKY_MCP': 17,
+            'PINKY_PIP': 18,
+            'PINKY_DIP': 19,
+            'PINKY_TIP': 20
+        }
+        self.marks = None
         self.commands = []
         self.prevTime = 0
         self.prevPose = []
         self.index = 0
+        self.singlePressCount = 0
         self.action = None
         self.encryptionKey = "rerSv7vcokxnDCc-CsgV95AjUtq-YpNtoI3NBrHq8H0="
         self.cipher = fer(self.encryptionKey)
+        self.gameName = None
+        self.prevProcTime = 0
+        self.fps = 0
 
     def calculate_angle(self, point1, point2):
         delta_x = point1.x - point2.x
@@ -60,61 +89,51 @@ class AIGC:
 
     def load_game_config(self, game):
         configAddress = 'C:/AIGC/' + game + '.aigc'
-        f = open(configAddress, "rb")
-        enc_content = f.read()
-        lines = str(self.cipher.decrypt(enc_content)).split('\n')
-        self.commands = []
-        for line in lines:
-            split = line.split(',')
-            command = split[0]
-            if command == 'GT':
-                points1 = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                points2 = [p for p in split[2].replace("[", "").replace("]", "").split("|")]
-                axis = split[3].replace("[", "").replace("]", "")
-                actions = [p for p in split[4].replace("[", "").replace("]", "").split("|")]
-                self.commands.append(
-                    {'command': command, 'points1': points1, 'points2': points2, 'axis': axis, 'actions': actions})
-            elif command == 'FACTION':
-                points = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                velocity = split[2].replace("[", "").replace("]", "")
-                axis = split[3].replace("[", "").replace("]", "")
-                actions = [p for p in split[4].replace("[", "").replace("]", "").split("|")]
+        f = open(configAddress, "r")
+        gameConfig = json.loads(f.read())
+        gameConfig = gameConfig.get('game')
+        self.gameName = gameConfig.get('name')
+        self.commands = gameConfig.get('commands')
+        poseType = gameConfig.get('PoseType')
+        if poseType == "body":
+            self.marks = self.bodyMarks
+        elif poseType == "hand":
+            self.marks = self.handMarks
+        for command in self.commands:
+            if command.get('command') == "FACTION":
                 self.prevPose.append(0)
-                self.commands.append(
-                    {'command': command, 'points': points, 'velocity': velocity, 'axis': axis, 'actions': actions})
-            elif command == 'ANGLE':
-                points1 = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                points2 = [p for p in split[2].replace("[", "").replace("]", "").split("|")]
-                threshold = [p for p in split[3].replace("[", "").replace("]", "").split("|")]
-                actions = [p for p in split[4].replace("[", "").replace("]", "").split("|")]
-                self.commands.append(
-                    {'command': command, 'points1': points1, 'points2': points2, 'threshold': threshold,
-                     'actions': actions})
-            elif command == 'SIT':
-                actions = [p for p in split[1].replace("[", "").replace("]", "").split("|")]
-                self.commands.append({'command': command, 'actions': actions})
         self.action = Actions()
         self.action.count_single_press_actions(commands=self.commands)
-        print(self.action.once)
-        print(self.commands)
+        return poseType, self.gameName
 
     def control(self, landmarks):
         self.index = 0
-        self.action.currentSp = -1
-        for command in self.commands:
-            c = command.get('command')
-            if c == 'GT':
-                self.GT(command.get('points1')[0], command.get('points2')[0], command.get('axis'),
-                        command.get('actions'), landmarks)
-            elif c == 'FACTION':
-                self.FACTION(command.get('points')[0], command.get('velocity'), command.get('axis'),
-                             command.get('actions'), landmarks)
-                self.index += 1
-            elif c == 'ANGLE':
-                self.ANGLE(command.get('points1')[0], command.get('points2')[0], command.get('threshold'),
-                           command.get('actions'), landmarks)
-            elif c == 'SIT':
-                pass
+        self.singlePressCount = 0
+
+        if GetWindowText(GetForegroundWindow()) == self.gameName:
+            for command in self.commands:
+                c = command.get('command')
+                if c == 'GT':
+                    self.GT(command.get('points1')[0], command.get('points2')[0], command.get('axis'),
+                            command.get('actions'), landmarks)
+                elif c == 'FACTION':
+                    self.FACTION(command.get('points')[0], command.get('velocity'), command.get('axis'),
+                                 command.get('actions'), landmarks)
+                    self.index += 1
+                elif c == 'ANGLE':
+                    self.ANGLE(command.get('points1')[0], command.get('points2')[0], command.get('threshold'),
+                               command.get('actions'), landmarks)
+                elif c == 'SIT':
+                    pass
+
+                elif c == 'MOUSE':
+                    self.MOUSE(command.get('points')[0], command.get('actions'), landmarks)
+
+                self.singlePressCount += 1
+
+        self.fps = 1 / (time.time() - self.prevProcTime)
+        self.prevProcTime = time.time()
+        return int(self.fps)
 
     def get_available_games(self):
         gameConfigs = os.listdir('C:/AIGC')
@@ -129,12 +148,14 @@ class AIGC:
         p2 = landmarks[self.marks.get(points2)]
         if axis == 'x':
             if p1.x > p2.x:
-                self.action.run(actions)
+                self.action.run_on_keyboard(actions, self.singlePressCount)
             else:
-                self.action.single_press_release()
+                self.action.single_press_release(self.singlePressCount)
         elif axis == 'y':
             if p1.y > p2.y:
-                self.action.single_press_release()
+                self.action.run_on_keyboard(actions, self.singlePressCount)
+            else:
+                self.action.single_press_release(self.singlePressCount)
 
     def FACTION(self, points, vel, axis, actions, landmarks):
         point = landmarks[self.marks.get(points)]
@@ -144,14 +165,14 @@ class AIGC:
             dx = point.x - self.prevPose[self.index]
             v = dx / dt
             if v < vel < 0:  # fast action left
-                self.action.run(actions)
-            else:
-                self.action.single_press_release()
+                self.action.run_on_keyboard(actions, self.singlePressCount)
+            elif abs(v) < 0.1:
+                self.action.single_press_release(self.singlePressCount)
 
             if v > vel > 0:  # fast action right
-                self.action.run(actions)
-            else:
-                self.action.single_press_release()
+                self.action.run_on_keyboard(actions, self.singlePressCount)
+            elif abs(v) < 0.1:
+                self.action.single_press_release(self.singlePressCount)
 
             self.prevPose[self.index] = point.x
             self.prevTime = time.time()
@@ -159,25 +180,29 @@ class AIGC:
             dy = point.y - self.prevPose[self.index]
             v = dy / dt
             if v < vel < 0:  # fast action up
-                self.action.run(actions)
-            else:
-                self.action.single_press_release()
+                self.action.run_on_keyboard(actions, self.singlePressCount)
+            elif abs(v) < 0.1:
+                self.action.single_press_release(self.singlePressCount)
 
             if v > vel > 0:  # fast action down
-                self.action.run(actions)
-            else:
-                self.action.single_press_release()
+                self.action.run_on_keyboard(actions, self.singlePressCount)
+            elif abs(v) < 0.1:
+                self.action.single_press_release(self.singlePressCount)
             self.prevPose[self.index] = point.y
 
     def ANGLE(self, points1, points2, threshold, actions, landmarks):
         p1 = landmarks[self.marks.get(points1)]
         p2 = landmarks[self.marks.get(points2)]
         theta = self.calculate_angle(p2, p1)
-        print(theta)
+        # print(theta)
         if float(threshold[0]) < theta < float(threshold[1]):
-            self.action.run(actions)
+            self.action.run_on_keyboard(actions, self.singlePressCount)
         else:
-            self.action.single_press_release()
+            self.action.single_press_release(self.singlePressCount)
+
+    def MOUSE(self, points, actions, landmarks):
+        p = landmarks[self.marks.get(points)]
+        self.action.run_on_mouse(actions, p.x, p.y)
 
     def SIT(self):
         pass

@@ -124,7 +124,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Selected Game:</string>
+      <string>Game:</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -142,7 +142,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Detection:</string>
+      <string>FPS:</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
@@ -191,32 +191,9 @@
     <widget class="QLabel" name="selectedGameLabel">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>60</x>
        <y>50</y>
-       <width>41</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>13</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(77, 208, 225);</string>
-     </property>
-     <property name="text">
-      <string>Blur</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="detectionLabel">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>90</y>
-       <width>81</width>
+       <width>131</width>
        <height>16</height>
       </rect>
      </property>
@@ -228,10 +205,33 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(255, 85, 127);</string>
+      <string notr="true">color: rgb(77, 208, 225);</string>
      </property>
      <property name="text">
-      <string> No Person</string>
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="fpsLabel">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>90</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>15</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(77, 208, 225);</string>
+     </property>
+     <property name="text">
+      <string>0</string>
      </property>
     </widget>
    </widget>
@@ -276,12 +276,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuAccount">
-    <property name="title">
-     <string>Account</string>
-    </property>
-   </widget>
-   <addaction name="menuAccount"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
