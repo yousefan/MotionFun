@@ -75,7 +75,6 @@ class AIGC:
         self.singlePressCount = 0
         self.action = None
         self.gameName = None
-        self.ready = False
         self.prevProcTime = 0
         self.fps = 0
 
@@ -91,7 +90,6 @@ class AIGC:
         gameConfig = json.loads(f.read())
         gameConfig = gameConfig.get('game')
         self.gameName = gameConfig.get('name')
-        self.ready = gameConfig.get('ready')
         self.commands = gameConfig.get('commands')
         poseType = gameConfig.get('PoseType')
         if poseType == "body":
@@ -132,7 +130,6 @@ class AIGC:
 
         self.fps = 1 / (time.time() - self.prevProcTime)
         self.prevProcTime = time.time()
-        print(self.fps)
         return int(self.fps)
 
     def get_available_games(self):
