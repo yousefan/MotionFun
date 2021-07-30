@@ -104,7 +104,7 @@ class AIGC:
         self.action = Actions()
         self.action.count_single_press_actions(commands=self.commands)
         print(self.commands)
-        return poseType
+        return poseType, self.gameName
 
     def control(self, landmarks):
         self.index = 0
@@ -132,7 +132,7 @@ class AIGC:
         self.fps = 1 / (time.time() - self.prevProcTime)
         self.prevProcTime = time.time()
         print(self.fps)
-        return self.fps
+        return int(self.fps)
 
     def get_available_games(self):
         gameConfigs = os.listdir('C:/AIGC')

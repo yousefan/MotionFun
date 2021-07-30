@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         self.gameSelection = self.window.gameSelection
         self.webcamSelection = self.window.webcamSelection
         self.selectedGameLabel = self.window.selectedGameLabel
-        self.detectionLabel = self.window.detectionLabel
+        self.fpsLabel = self.window.fpsLabel
         self.statusLabel = self.window.statusLabel
         self.imageLabel = self.window.imageLabel
 
@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
             if not self.started:
                 webcam_id = int(self.webcamSelection.currentText().replace("webcam ", ""))
                 selectedGame = self.gameSelection.currentText()
-                poseType = self.aigc.load_game_config(selectedGame)
+                poseType, gameName = self.aigc.load_game_config(selectedGame)
                 self.thread = WebcamThread(webcam_id, poseType)
                 self.thread.change_pixmap_signal.connect(self.update_image)
                 self.thread.detection.connect(self.detection)
@@ -67,6 +67,7 @@ class MainWindow(QMainWindow):
                 self.startBtn.setText("Stop")
                 self.statusLabel.setStyleSheet("color: rgb(85, 170, 127);")
                 self.statusLabel.setText("Running")
+                self.selectedGameLabel.setText(gameName)
             else:
                 self.thread.stop()
                 self.started = False
@@ -94,6 +95,7 @@ class MainWindow(QMainWindow):
     @Slot(list)
     def landmarks(self, landmarks):
         fps = self.aigc.control(landmarks=landmarks)
+        self.fpsLabel.setText(str(fps))
 
     @Slot(list)
     def on_loaded_webcams(self, webcams):
@@ -109,12 +111,7 @@ class MainWindow(QMainWindow):
 
     @Slot(bool)
     def detection(self, detected):
-        if detected:
-            self.detectionLabel.setStyleSheet("color: rgb(85, 170, 127);")
-            self.detectionLabel.setText("Detected")
-        else:
-            self.detectionLabel.setStyleSheet("color: rgb(255, 85, 127);")
-            self.detectionLabel.setText("No Person")
+        pass
 
     def convert_cv_qt(self, cv_img):
         rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
