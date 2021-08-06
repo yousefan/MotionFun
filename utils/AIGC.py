@@ -90,8 +90,8 @@ class AIGC:
 
     def load_game_config(self, game):
         configAddress = 'C:/AIGC/' + game + '.aigc'
-        f = open(configAddress, "r")
-        decrypted_content = cipher.decrypt(f.read())
+        f = open(configAddress, "rb")
+        decrypted_content = self.cipher.decrypt(f.read())
         gameConfig = json.loads(decrypted_content)
         gameConfig = gameConfig.get('game')
         self.gameName = gameConfig.get('name')
