@@ -1,7 +1,7 @@
-from PySide6.QtCore import QThread, Signal
-import numpy as np
-import mediapipe as mp
 import cv2
+import mediapipe as mp
+import numpy as np
+from PySide6.QtCore import QThread, Signal
 
 
 class WebcamThread(QThread):
@@ -43,7 +43,8 @@ class WebcamThread(QThread):
                 cap.release()
 
         elif self.pose_type == "hand":
-            with self.handPose.Hands(min_detection_confidence=0.6, min_tracking_confidence=0.5, max_num_hands=1) as pose:
+            with self.handPose.Hands(min_detection_confidence=0.6, min_tracking_confidence=0.5,
+                                     max_num_hands=1) as pose:
                 while self.run_flag:
                     ret, image = cap.read()
                     image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)

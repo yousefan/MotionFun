@@ -1,6 +1,7 @@
+import threading
+
 import pyautogui
 import pydirectinput
-import threading
 
 
 class Actions:

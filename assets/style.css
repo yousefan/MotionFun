@@ -1,13 +1,44 @@
 
-.btn-fill-rounded {{
-  color: {QTMATERIAL_SECONDARYCOLOR};
-  text-transform: none;
-  background-color: {QTMATERIAL_PRIMARYCOLOR};
-  border-radius: 18px;
-}}
+.btn-fill-rounded {
 
-.btn-fill {{
-  color: {QTMATERIAL_SECONDARYCOLOR};
-  text-transform: none;
-  background-color: {QTMATERIAL_PRIMARYCOLOR};
-}}
+{
+color: {
+    QTMATERIAL_SECONDARYCOLOR
+}
+
+;
+text-transform: none
+
+;
+background-color: {
+    QTMATERIAL_PRIMARYCOLOR
+}
+
+;
+border-radius:
+
+18
+px
+
+;
+}
+}
+
+.btn-fill {
+
+{
+color: {
+    QTMATERIAL_SECONDARYCOLOR
+}
+
+;
+text-transform: none
+
+;
+background-color: {
+    QTMATERIAL_PRIMARYCOLOR
+}
+
+;
+}
+}

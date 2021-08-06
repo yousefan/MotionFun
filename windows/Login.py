@@ -1,10 +1,10 @@
-from PySide6.QtWidgets import QMainWindow, QMessageBox
-from PySide6.QtUiTools import QUiLoader
+import requests
 from PySide6 import QtGui
-from PySide6.QtCore import QFile, QObject, QIODeviceBase
+from PySide6.QtCore import QFile, QIODeviceBase
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QMainWindow, QMessageBox
 
 from windows.Main import MainWindow
-import requests
 
 
 class LoginWindow(QMainWindow):
@@ -33,7 +33,6 @@ class LoginWindow(QMainWindow):
         self.loginBtn.clicked.connect(self.login)
 
         self.window.show()
-
 
     def login(self):
         username = self.usernameField.text()

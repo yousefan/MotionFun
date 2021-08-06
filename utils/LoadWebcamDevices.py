@@ -1,5 +1,5 @@
-from PySide6.QtCore import QThread, Signal
 import cv2
+from PySide6.QtCore import QThread, Signal
 
 
 class LoadWebcamDevices(QThread):
