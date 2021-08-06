@@ -1,14 +1,14 @@
-from PySide6 import QtGui
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QMainWindow, QMessageBox
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QThread, Signal, Slot, Qt, QFile, QObject, QIODeviceBase
-import numpy as np
 import cv2
+import numpy as np
+from PySide6 import QtGui
+from PySide6.QtCore import Slot, Qt, QFile, QIODeviceBase
+from PySide6.QtGui import QPixmap
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QMainWindow, QMessageBox
 
+from utils.AIGC import AIGC
 from utils.LoadWebcamDevices import LoadWebcamDevices
 from utils.WebcamThread import WebcamThread
-from utils.AIGC import AIGC
 
 
 class MainWindow(QMainWindow):

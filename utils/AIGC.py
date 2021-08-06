@@ -2,9 +2,12 @@ import json
 import math
 import os
 import time
-from playsound import playsound
+
+from cryptography.fernet import Fernet as fer
 from win32gui import GetWindowText, GetForegroundWindow
+
 from utils.Actions import Actions
+from utils.Globals import encryptionKey
 
 
 class AIGC:
@@ -74,6 +77,7 @@ class AIGC:
         self.index = 0
         self.singlePressCount = 0
         self.action = None
+        self.cipher = fer(encryptionKey)
         self.gameName = None
         self.prevProcTime = 0
         self.fps = 0
@@ -86,8 +90,9 @@ class AIGC:
 
     def load_game_config(self, game):
         configAddress = 'C:/AIGC/' + game + '.aigc'
-        f = open(configAddress, "r")
-        gameConfig = json.loads(f.read())
+        f = open(configAddress, "rb")
+        decrypted_content = self.cipher.decrypt(f.read())
+        gameConfig = json.loads(decrypted_content)
         gameConfig = gameConfig.get('game')
         self.gameName = gameConfig.get('name')
         self.commands = gameConfig.get('commands')
