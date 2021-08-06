@@ -6,9 +6,9 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QMainWindow, QMessageBox
 
-from utils.AIGC import AIGC
-from utils.LoadWebcamDevices import LoadWebcamDevices
-from utils.WebcamThread import WebcamThread
+from lib.AIGC import AIGC
+from lib.LoadWebcamDevices import LoadWebcamDevices
+from lib.WebcamThread import WebcamThread
 
 
 class MainWindow(QMainWindow):

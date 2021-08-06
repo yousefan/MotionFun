@@ -6,8 +6,8 @@ import time
 from cryptography.fernet import Fernet as fer
 from win32gui import GetWindowText, GetForegroundWindow
 
-from utils.Actions import Actions
-from utils.Globals import encryptionKey
+from lib.Actions import Actions
+from lib.Globals import encryptionKey
 
 
 class AIGC:
