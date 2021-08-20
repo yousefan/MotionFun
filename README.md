@@ -1,3 +1,3 @@
-# aigc
+# MotionFun
 
 Artificial Intelligence Game Controller
