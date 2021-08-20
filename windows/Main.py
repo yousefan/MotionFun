@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
 
         self.window = uic.loadUi(resource_path("assets/ui/main.ui"), self)
 
-        self.window.setWindowIcon(QtGui.QIcon('assets/logo.png'))
+        self.window.setWindowIcon(QtGui.QIcon(resource_path('assets/logo.png')))
         self.window.setWindowTitle("MotionFun")
 
         self.startBtn = self.window.startBtn

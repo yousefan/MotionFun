@@ -1,4 +1,4 @@
-from getmac import get_mac_address
+import os
 import os
 import sys
 
@@ -6,6 +6,7 @@ from PyQt5 import QtGui, uic
 from PyQt5.QtWidgets import QMainWindow
 from getmac import get_mac_address
 
+from lib.Globals import macAddress
 from windows.Main import MainWindow
 
 
@@ -22,13 +23,13 @@ class LoginWindow(QMainWindow):
 
         self.mainWindow = None
 
-        self.window.setWindowIcon(QtGui.QIcon('assets/logo.png'))
+        self.window.setWindowIcon(QtGui.QIcon(resource_path('assets/logo.png')))
         self.window.setWindowTitle("Login")
 
         self.loginBtn = self.window.loginBtn
         self.loginLogo = self.window.loginLogo
 
-        self.pixmap = QtGui.QPixmap('assets/logo-light.png')
+        self.pixmap = QtGui.QPixmap(resource_path('assets/logo-light.png'))
         self.loginLogo.setPixmap(self.pixmap)
 
         self.loginBtn.setProperty('class', 'btn-fill-rounded')
@@ -42,7 +43,7 @@ class LoginWindow(QMainWindow):
 
         if self.systemMacAddress == macAddress:
             self.mainWindow = MainWindow()
-            self.window = None
+            self.window.close()
         else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
