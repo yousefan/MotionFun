@@ -9,7 +9,7 @@ from windows.Main import MainWindow
 
 if __name__ == '__main__':
     if 'MotionFun' not in os.listdir('C:/'):
-        os.makedirs('C:/AIGC')
+        os.makedirs('C:/MotionFun')
     app = QApplication(sys.argv)
     apply_stylesheet(app, theme='dark_cyan.xml')
     stylesheet = app.styleSheet()

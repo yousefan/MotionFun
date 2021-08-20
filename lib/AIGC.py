@@ -138,7 +138,7 @@ class AIGC:
         return int(self.fps)
 
     def get_available_games(self):
-        gameConfigs = os.listdir('C:/AIGC')
+        gameConfigs = os.listdir('C:/MotionFun')
         games = []
         for gc in gameConfigs:
             if ".aigc" in gc:
