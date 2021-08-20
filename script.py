@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PySide6.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication
 from qt_material import apply_stylesheet
 
 from windows.Login import LoginWindow
@@ -16,5 +16,5 @@ if __name__ == '__main__':
     with open('assets/style.css') as file:
         app.setStyleSheet(stylesheet + file.read().format(**os.environ))
 
-    window = LoginWindow()
+    window = MainWindow()
     app.exec()

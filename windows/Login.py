@@ -1,21 +1,24 @@
-import requests
 from getmac import get_mac_address
-from lib.Globals import macAddress
-from PySide6 import QtGui
-from PySide6.QtCore import QFile, QIODeviceBase
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QMainWindow, QMessageBox
+import os
+import sys
+
+from PyQt5 import QtGui, uic
+from PyQt5.QtWidgets import QMainWindow
+from getmac import get_mac_address
 
 from windows.Main import MainWindow
+
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath('.'), relative_path)
 
 
 class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        ui_file = QFile("assets/ui/start.ui")
-        ui_file.open(QIODeviceBase.ReadOnly)
-        self.window = QUiLoader().load(ui_file)
-        ui_file.close()
+        self.window = uic.loadUi(resource_path('assets/ui/start.ui'), self)
 
         self.mainWindow = None
 

@@ -1,9 +1,9 @@
 import cv2
-from PySide6.QtCore import QThread, Signal
+from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class LoadWebcamDevices(QThread):
-    devices = Signal(list)
+    devices = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()

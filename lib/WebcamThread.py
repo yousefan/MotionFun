@@ -1,13 +1,13 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-from PySide6.QtCore import QThread, Signal
+from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class WebcamThread(QThread):
-    change_pixmap_signal = Signal(np.ndarray)
-    detection = Signal(bool)
-    landmark_results = Signal(list)
+    change_pixmap_signal = pyqtSignal(np.ndarray)
+    detection = pyqtSignal(bool)
+    landmark_results = pyqtSignal(list)
 
     def __init__(self, webcam_id, pose_type):
         super().__init__()
@@ -57,7 +57,7 @@ class WebcamThread(QThread):
                     else:
                         self.detection.emit(True)
                         for hand_landmark in results.multi_hand_landmarks:
-                            self.landmark_results.emit(hand_landmark.landmark)
+                            self.landmark_results.emit(list(hand_landmark.landmark))
 
                     self.draw_horizontal_line(image)
                     self.change_pixmap_signal.emit(image)

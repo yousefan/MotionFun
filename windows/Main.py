@@ -1,24 +1,29 @@
+import os
+import sys
+
 import cv2
 import numpy as np
-from PySide6 import QtGui
-from PySide6.QtCore import Slot, Qt, QFile, QIODeviceBase
-from PySide6.QtGui import QPixmap
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QMainWindow, QMessageBox
+from PyQt5 import QtGui, uic
+from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 from lib.AIGC import AIGC
 from lib.LoadWebcamDevices import LoadWebcamDevices
 from lib.WebcamThread import WebcamThread
 
 
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath('.'), relative_path)
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        ui_file = QFile("assets/ui/main.ui")
-        ui_file.open(QIODeviceBase.ReadOnly)
-        self.window = QUiLoader().load(ui_file)
-        ui_file.close()
+        self.window = uic.loadUi(resource_path("assets/ui/main.ui"), self)
 
         self.window.setWindowIcon(QtGui.QIcon('assets/logo.png'))
         self.window.setWindowTitle("MotionFun")
@@ -92,24 +97,24 @@ class MainWindow(QMainWindow):
         self.thread.stop()
         event.accept()
 
-    @Slot(list)
+    @pyqtSlot(list)
     def landmarks(self, landmarks):
         fps = self.aigc.control(landmarks=landmarks)
         self.fpsLabel.setText(str(fps))
 
-    @Slot(list)
+    @pyqtSlot(list)
     def on_loaded_webcams(self, webcams):
         self.startBtn.setEnabled(True)
         self.startBtn.setText("Start")
         for webcam in webcams:
             self.webcamSelection.addItem("webcam " + str(webcam))
 
-    @Slot(np.ndarray)
+    @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         qt_img = self.convert_cv_qt(cv_img)
         self.imageLabel.setPixmap(qt_img)
 
-    @Slot(bool)
+    @pyqtSlot(bool)
     def detection(self, detected):
         pass
 
