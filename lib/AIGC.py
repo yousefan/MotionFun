@@ -89,7 +89,7 @@ class AIGC:
         return theta
 
     def load_game_config(self, game):
-        configAddress = 'C:/AIGC/' + game + '.aigc'
+        configAddress = 'C:/MotionFun/' + game + '.aigc'
         f = open(configAddress, "rb")
         decrypted_content = self.cipher.decrypt(f.read())
         gameConfig = json.loads(decrypted_content)

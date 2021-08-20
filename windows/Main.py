@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         ui_file.close()
 
         self.window.setWindowIcon(QtGui.QIcon('assets/logo.png'))
-        self.window.setWindowTitle("AIGC")
+        self.window.setWindowTitle("MotionFun")
 
         self.startBtn = self.window.startBtn
         self.startBtn.setProperty('class', 'btn-fill-rounded')
