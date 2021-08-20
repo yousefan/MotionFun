@@ -14,6 +14,7 @@ class Actions:
         self.KEY_DOWN = "kd"
         self.K2 = "k2"
         self.DRAG = "drag"
+        self.CLICK = "click"
         self.once = []
         self.currentSp = -1
 
@@ -31,7 +32,7 @@ class Actions:
             else:
                 self.once = []
 
-    def run_on_keyboard(self, actions, spc):  # spc => single press count
+    def run(self, actions, spc=None, x=None, y=None):  # spc => single press count
         for action in actions:
             act, key = action.get('action'), action.get('key')
             if act == self.SINGLE_PRESS:
@@ -45,14 +46,12 @@ class Actions:
             elif act == self.FACTOR_PRESS:
                 factor = action.get('factor')
                 threading.Thread(target=self.factor_press, args=(key, factor,)).start()
+            elif act == self.DRAG:
+                threading.Thread(target=self.mouse_drag, args=(key, x, y,)).start()
+            elif act == self.CLICK:
+                threading.Thread(target=self.mouse_click, args=(key,)).start()
             elif act == self.K2:
                 pass
-
-    def run_on_mouse(self, actions, x, y):
-        for action in actions:
-            act, key = action.get('action'), action.get('key')
-            if act == self.DRAG:
-                threading.Thread(target=self.mouse_drag, args=(key, x, y,)).start()
 
     def single_press_release(self, spc):
         if len(self.once) > 0:
@@ -78,3 +77,6 @@ class Actions:
     def mouse_drag(self, key, x, y):
         pydirectinput.mouseDown(button=key)
         pydirectinput.moveTo(x=int(x * self.screenSize.width), y=int(y * self.screenSize.height))
+
+    def mouse_click(self, key,):
+        pydirectinput.click(button=key)

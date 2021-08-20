@@ -150,12 +150,12 @@ class AIGC:
         p2 = landmarks[self.marks.get(points2)]
         if axis == 'x':
             if p1.x > p2.x:
-                self.action.run_on_keyboard(actions, self.singlePressCount)
+                self.action.run(actions, self.singlePressCount)
             else:
                 self.action.single_press_release(self.singlePressCount)
         elif axis == 'y':
             if p1.y > p2.y:
-                self.action.run_on_keyboard(actions, self.singlePressCount)
+                self.action.run(actions, self.singlePressCount)
             else:
                 self.action.single_press_release(self.singlePressCount)
 
@@ -167,12 +167,12 @@ class AIGC:
             dx = point.x - self.prevPose[self.index]
             v = dx / dt
             if v < vel < 0:  # fast action left
-                self.action.run_on_keyboard(actions, self.singlePressCount)
+                self.action.run(actions, self.singlePressCount)
             elif abs(v) < 0.1:
                 self.action.single_press_release(self.singlePressCount)
 
             if v > vel > 0:  # fast action right
-                self.action.run_on_keyboard(actions, self.singlePressCount)
+                self.action.run(actions, self.singlePressCount)
             elif abs(v) < 0.1:
                 self.action.single_press_release(self.singlePressCount)
 
@@ -182,12 +182,12 @@ class AIGC:
             dy = point.y - self.prevPose[self.index]
             v = dy / dt
             if v < vel < 0:  # fast action up
-                self.action.run_on_keyboard(actions, self.singlePressCount)
+                self.action.run(actions, self.singlePressCount)
             elif abs(v) < 0.1:
                 self.action.single_press_release(self.singlePressCount)
 
             if v > vel > 0:  # fast action down
-                self.action.run_on_keyboard(actions, self.singlePressCount)
+                self.action.run(actions, self.singlePressCount)
             elif abs(v) < 0.1:
                 self.action.single_press_release(self.singlePressCount)
             self.prevPose[self.index] = point.y
@@ -198,13 +198,13 @@ class AIGC:
         theta = self.calculate_angle(p2, p1)
         # print(theta)
         if float(threshold[0]) < theta < float(threshold[1]):
-            self.action.run_on_keyboard(actions, self.singlePressCount)
+            self.action.run(actions, self.singlePressCount)
         else:
             self.action.single_press_release(self.singlePressCount)
 
     def MOUSE(self, points, actions, landmarks):
         p = landmarks[self.marks.get(points)]
-        self.action.run_on_mouse(actions, p.x, p.y)
+        self.action.run(actions, x=p.x, y=p.y)
 
     def SIT(self):
         pass
