@@ -127,10 +127,10 @@ class AIGC:
                                command.get('actions'), landmarks)
                 elif c == 'SIT':
                     pass
-
+    
                 elif c == 'MOUSE':
                     self.MOUSE(command.get('points')[0], command.get('actions'), landmarks)
-
+    
                 self.singlePressCount += 1
 
         self.fps = 1 / (time.time() - self.prevProcTime)

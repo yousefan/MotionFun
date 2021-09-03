@@ -53,5 +53,5 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           upx_exclude=[],
-          runtime_tmpdir=Non,
-          console=False, icon='C:\\Users\\whoismahd1\\Desktop\\logo.ico' )
+          runtime_tmpdir=None,
+          console=False, icon='C:\\Users\\whoismahd1\\Desktop\\md\\logo.ico' )

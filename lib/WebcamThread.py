@@ -35,7 +35,7 @@ class WebcamThread(QThread):
                         self.detection.emit(False)
                     else:
                         self.detection.emit(True)
-                        self.landmark_results.emit(results.pose_landmarks.landmark)
+                        self.landmark_results.emit(list(results.pose_landmarks.landmark))
 
                     self.draw_horizontal_line(image)
                     self.change_pixmap_signal.emit(image)

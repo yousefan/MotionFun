@@ -3,10 +3,8 @@ import os
 import sys
 
 from PyQt5 import QtGui, uic
-from PyQt5.QtWidgets import QMainWindow
-from getmac import get_mac_address
-
-from lib.Globals import macAddress
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from lib.Globals import device_id
 from windows.Main import MainWindow
 
 
@@ -17,8 +15,11 @@ def resource_path(relative_path):
 
 
 class LoginWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, system_id):
         super().__init__()
+
+        self.system_id = system_id
+
         self.window = uic.loadUi(resource_path('assets/ui/start.ui'), self)
 
         self.mainWindow = None
@@ -35,19 +36,16 @@ class LoginWindow(QMainWindow):
         self.loginBtn.setProperty('class', 'btn-fill-rounded')
         self.loginBtn.clicked.connect(self.login)
 
-        self.systemMacAddress = get_mac_address()
-
         self.window.show()
 
     def login(self):
-
-        if self.systemMacAddress == macAddress:
+        if self.system_id == device_id:
             self.mainWindow = MainWindow()
             self.window.close()
         else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
-            msg.setText("Application cannot be used for this computer")
+            msg.setText("Application cannot be used for this device")
             msg.setWindowTitle("Authentication Error")
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec()

@@ -7,6 +7,8 @@ from qt_material import apply_stylesheet
 from windows.Main import MainWindow
 from windows.Login import LoginWindow
 
+from subprocess import Popen, PIPE, STDOUT
+
 # pyinstaller script.spec --hidden-import qt_material --hidden-import PyQt5
 
 def resource_path(relative_path):
@@ -24,5 +26,7 @@ if __name__ == '__main__':
     with open(resource_path('assets/style.css')) as file:
         app.setStyleSheet(stylesheet + file.read().format(**os.environ))
 
-    window = LoginWindow()
+    p = Popen('dmidecode.exe -s system-uuid', stdout=PIPE, stderr=STDOUT, shell=True)
+    sys_id = p.stdout.readline()
+    window = LoginWindow(sys_id)
     app.exec()

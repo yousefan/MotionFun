@@ -1,2 +1,2 @@
 encryptionKey = "rerSv7vcokxnDCc-CsgV95AjUtq-YpNtoI3NBrHq8H0="
-macAddress = "54:35:30:9e:de:3f"
+device_id = b"A76BA602-F1A8-E311-B766-F8A96301DCCB\r\n"
